@@ -70,6 +70,6 @@ def test_model(model_path, num_points=1024):
 
 if __name__ == '__main__':
     # Test the latest model
-    model_path = 'cls/cls_model_9.pth'  # Last epoch
+    model_path = 'cls/cls_model_19.pth'  # Last epoch (20 epochs total)
     accuracy = test_model(model_path)
     print(f"\nFinal test accuracy: {accuracy:.4f}")
