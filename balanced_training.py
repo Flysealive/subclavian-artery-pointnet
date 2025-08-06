@@ -416,7 +416,7 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', default='high_quality', choices=['clean', 'balanced', 'high_quality'])
     parser.add_argument('--balance_method', default='weighted', choices=['weighted', 'oversample', 'undersample', 'none'])
     parser.add_argument('--loss_type', default='weighted', choices=['weighted', 'focal', 'standard'])
-    parser.add_argument('--epochs', type=int, default=40)
+    parser.add_argument('--epochs', type=int, default=1000)
     parser.add_argument('--batch_size', type=int, default=8)
     parser.add_argument('--num_points', type=int, default=1024)
     
