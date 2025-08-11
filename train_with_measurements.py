@@ -15,10 +15,19 @@ def train_model_with_measurements(model_type='late_fusion', epochs=100, batch_si
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"Using device: {device}")
     
+    # Check if csv file exists, use the new one if available
+    import os
+    csv_file = 'classification_labels_with_measurements.csv'
+    if not os.path.exists(csv_file):
+        print(f"Warning: {csv_file} not found, using default")
+        csv_file = 'classification_labels.csv'
+    else:
+        print(f"Using measurements file: {csv_file}")
+    
     # Create datasets
     train_dataset = SubclavianDatasetWithMeasurements(
         numpy_dir='numpy_arrays',
-        csv_file='classification_labels_with_measurements.csv',
+        csv_file=csv_file,
         split='train',
         npoints=1024,
         data_augmentation=True
@@ -26,7 +35,7 @@ def train_model_with_measurements(model_type='late_fusion', epochs=100, batch_si
     
     val_dataset = SubclavianDatasetWithMeasurements(
         numpy_dir='numpy_arrays',
-        csv_file='classification_labels_with_measurements.csv',
+        csv_file=csv_file,
         split='val',
         npoints=1024,
         data_augmentation=False
@@ -34,16 +43,17 @@ def train_model_with_measurements(model_type='late_fusion', epochs=100, batch_si
     
     test_dataset = SubclavianDatasetWithMeasurements(
         numpy_dir='numpy_arrays',
-        csv_file='classification_labels_with_measurements.csv',
+        csv_file=csv_file,
         split='test',
         npoints=1024,
         data_augmentation=False
     )
     
-    # Create data loaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
-    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+    # Create data loaders - ensure batch size is at least 2 for batch norm
+    effective_batch_size = max(2, batch_size)
+    train_loader = DataLoader(train_dataset, batch_size=effective_batch_size, shuffle=True, num_workers=0, drop_last=True)
+    val_loader = DataLoader(val_dataset, batch_size=effective_batch_size, shuffle=False, num_workers=0)
+    test_loader = DataLoader(test_dataset, batch_size=effective_batch_size, shuffle=False, num_workers=0)
     
     # Create model
     if model_type == 'late_fusion':
@@ -76,6 +86,10 @@ def train_model_with_measurements(model_type='late_fusion', epochs=100, batch_si
         train_total = 0
         
         for points, measurements, labels in train_loader:
+            # Skip batch if size is 1 (batch norm issue)
+            if points.size(0) == 1:
+                continue
+                
             points = points.to(device)
             measurements = measurements.to(device)
             labels = labels.squeeze().to(device)

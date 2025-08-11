@@ -1,0 +1,21 @@
+{
+  "test_accuracy": 80.0,
+  "test_balanced_accuracy": 67.3076923076923,
+  "class_0_accuracy": 84.61538461538461,
+  "class_1_accuracy": 50.0,
+  "confusion_matrix": [
+    [
+      11.0,
+      2.0
+    ],
+    [
+      1.0,
+      1.0
+    ]
+  ],
+  "best_epoch": 100,
+  "total_epochs": 200,
+  "training_time_hours": 0.3287590931521522,
+  "device": "cuda",
+  "model_parameters": 2370187
+}

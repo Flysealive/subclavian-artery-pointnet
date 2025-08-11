@@ -33,11 +33,24 @@ class SubclavianDatasetWithMeasurements(Dataset):
         # Load CSV with measurements
         df = pd.read_csv(csv_file)
         
+        # Map column names - handle both old and new naming conventions
+        column_mapping = {
+            'left_subclavian_diameter_mm': 'left_subclavian_diameter',
+            'aortic_arch_diameter_mm': 'aortic_arch_diameter',
+            'angle_degrees': 'angle'
+        }
+        
+        # Rename columns if needed
+        for old_name, new_name in column_mapping.items():
+            if old_name in df.columns and new_name not in df.columns:
+                df = df.rename(columns={old_name: new_name})
+        
         # Ensure required columns exist
         required_cols = ['filename', 'label', 'left_subclavian_diameter', 
                         'aortic_arch_diameter', 'angle']
         for col in required_cols:
             if col not in df.columns:
+                print(f"Available columns: {df.columns.tolist()}")
                 raise ValueError(f"Missing required column: {col}")
         
         # Filter for existing files
