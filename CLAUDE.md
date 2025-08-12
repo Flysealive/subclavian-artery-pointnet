@@ -221,6 +221,172 @@ def deep_learning_best_practices():
     print(f"Test Accuracy: {test_acc:.3f}")  # THIS is what you report!
 ```
 
+### 5. ENSEMBLE Methods for Better Performance
+```python
+def ensemble_models_with_statistics(models_list, X_test, y_test):
+    """
+    Ensemble multiple models and show detailed statistics
+    """
+    from scipy import stats
+    from sklearn.metrics import accuracy_score, balanced_accuracy_score
+    
+    # 1. Get predictions from all models
+    all_predictions = []
+    individual_scores = []
+    
+    for model_name, model in models_list:
+        predictions = model.predict(X_test)
+        all_predictions.append(predictions)
+        
+        # Individual model performance
+        acc = accuracy_score(y_test, predictions)
+        balanced_acc = balanced_accuracy_score(y_test, predictions)
+        individual_scores.append({
+            'model': model_name,
+            'accuracy': acc,
+            'balanced_accuracy': balanced_acc
+        })
+        print(f"{model_name}: Acc={acc:.3f}, Balanced={balanced_acc:.3f}")
+    
+    # 2. Majority Voting Ensemble
+    all_predictions = np.array(all_predictions)
+    ensemble_pred_majority = stats.mode(all_predictions, axis=0)[0].flatten()
+    
+    # 3. Weighted Voting (based on individual performance)
+    weights = [score['balanced_accuracy'] for score in individual_scores]
+    weights = np.array(weights) / np.sum(weights)  # Normalize
+    
+    weighted_predictions = np.zeros((len(y_test), 2))  # For binary classification
+    for i, pred in enumerate(all_predictions):
+        for j in range(len(pred)):
+            weighted_predictions[j, pred[j]] += weights[i]
+    ensemble_pred_weighted = np.argmax(weighted_predictions, axis=1)
+    
+    # 4. Calculate ensemble statistics
+    ensemble_acc_majority = accuracy_score(y_test, ensemble_pred_majority)
+    ensemble_balanced_majority = balanced_accuracy_score(y_test, ensemble_pred_majority)
+    
+    ensemble_acc_weighted = accuracy_score(y_test, ensemble_pred_weighted)
+    ensemble_balanced_weighted = balanced_accuracy_score(y_test, ensemble_pred_weighted)
+    
+    # 5. Statistical significance tests
+    from sklearn.metrics import confusion_matrix
+    
+    # McNemar's test between best individual and ensemble
+    best_individual = all_predictions[np.argmax([s['balanced_accuracy'] for s in individual_scores])]
+    
+    # Create contingency table for McNemar's test
+    correct_individual = (best_individual == y_test)
+    correct_ensemble = (ensemble_pred_weighted == y_test)
+    
+    n00 = np.sum((~correct_individual) & (~correct_ensemble))  # Both wrong
+    n01 = np.sum((~correct_individual) & correct_ensemble)     # Individual wrong, ensemble right
+    n10 = np.sum(correct_individual & (~correct_ensemble))     # Individual right, ensemble wrong
+    n11 = np.sum(correct_individual & correct_ensemble)        # Both right
+    
+    # McNemar's test statistic
+    if n01 + n10 > 0:
+        mcnemar_stat = (n01 - n10) ** 2 / (n01 + n10)
+        p_value = 1 - stats.chi2.cdf(mcnemar_stat, df=1)
+    else:
+        p_value = 1.0
+    
+    # 6. Display comprehensive results
+    print("\n" + "="*60)
+    print("ENSEMBLE STATISTICS")
+    print("="*60)
+    
+    print("\nINDIVIDUAL MODEL PERFORMANCE:")
+    for score in individual_scores:
+        print(f"  {score['model']:30s}: {score['balanced_accuracy']:.3f}")
+    
+    print(f"\nENSEMBLE PERFORMANCE:")
+    print(f"  Majority Voting:")
+    print(f"    Accuracy:          {ensemble_acc_majority:.3f}")
+    print(f"    Balanced Accuracy: {ensemble_balanced_majority:.3f}")
+    print(f"  Weighted Voting:")
+    print(f"    Accuracy:          {ensemble_acc_weighted:.3f}")
+    print(f"    Balanced Accuracy: {ensemble_balanced_weighted:.3f}")
+    
+    # Calculate improvement
+    best_individual_score = max([s['balanced_accuracy'] for s in individual_scores])
+    improvement_majority = ensemble_balanced_majority - best_individual_score
+    improvement_weighted = ensemble_balanced_weighted - best_individual_score
+    
+    print(f"\nIMPROVEMENT OVER BEST INDIVIDUAL:")
+    print(f"  Majority Voting:  {improvement_majority:+.3f} ({improvement_majority*100:+.1f}%)")
+    print(f"  Weighted Voting:  {improvement_weighted:+.3f} ({improvement_weighted*100:+.1f}%)")
+    
+    print(f"\nSTATISTICAL SIGNIFICANCE:")
+    print(f"  McNemar's Test (best individual vs weighted ensemble):")
+    print(f"    Chi-square statistic: {mcnemar_stat:.3f}")
+    print(f"    P-value: {p_value:.4f}")
+    if p_value < 0.05:
+        print(f"    Result: Significant improvement (p < 0.05)")
+    else:
+        print(f"    Result: No significant difference (p >= 0.05)")
+    
+    print(f"\nCONTINGENCY TABLE:")
+    print(f"                    Ensemble Correct | Ensemble Wrong")
+    print(f"  Individual Correct:     {n11:3d}      |     {n10:3d}")
+    print(f"  Individual Wrong:       {n01:3d}      |     {n00:3d}")
+    
+    # 7. Confidence intervals using bootstrap
+    n_bootstrap = 1000
+    bootstrap_scores = []
+    
+    for _ in range(n_bootstrap):
+        # Resample indices
+        idx = np.random.choice(len(y_test), len(y_test), replace=True)
+        y_boot = y_test[idx]
+        pred_boot = ensemble_pred_weighted[idx]
+        bootstrap_scores.append(balanced_accuracy_score(y_boot, pred_boot))
+    
+    ci_lower = np.percentile(bootstrap_scores, 2.5)
+    ci_upper = np.percentile(bootstrap_scores, 97.5)
+    
+    print(f"\nENSEMBLE 95% CONFIDENCE INTERVAL:")
+    print(f"  Balanced Accuracy: {ensemble_balanced_weighted:.3f} [{ci_lower:.3f}, {ci_upper:.3f}]")
+    
+    return {
+        'individual_scores': individual_scores,
+        'ensemble_majority': ensemble_balanced_majority,
+        'ensemble_weighted': ensemble_balanced_weighted,
+        'improvement': improvement_weighted,
+        'p_value': p_value,
+        'confidence_interval': (ci_lower, ci_upper)
+    }
+
+# Example usage for your models
+models_to_ensemble = [
+    ('Hybrid_PointNet_Voxel', hybrid_model),
+    ('MeshCNN_GNN', meshcnn_model),
+    ('Traditional_ML', rf_model)
+]
+
+ensemble_results = ensemble_models_with_statistics(
+    models_to_ensemble, X_test, y_test
+)
+
+# Expected results based on your data:
+# Individual models: 89.5%, 94%, 82%
+# Ensemble (weighted): ~95-96% (typically 2-4% improvement)
+# Statistical significance: Likely significant with p < 0.05
+```
+
+### 6. Reporting Ensemble Results in Papers
+```
+✅ CORRECT way to report ensemble:
+"The ensemble of three models achieved 95.6% ± 2.1% balanced accuracy 
+(95% CI: [93.5%, 97.7%]), a significant improvement over the best 
+individual model (94.0%, p=0.023, McNemar's test). Individual model 
+performances were: Hybrid (89.5%), MeshCNN/GNN (94.0%), and Traditional 
+ML (82.0%). Weighted voting outperformed majority voting (95.6% vs 94.8%)."
+
+❌ WRONG way:
+"Ensemble achieved 96% accuracy" (no details, no statistics, no CI)
+```
+
 ## Important Commands
 ```bash
 # Setup data
