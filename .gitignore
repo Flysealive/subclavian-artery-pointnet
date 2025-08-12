@@ -1,9 +1,12 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -15,38 +18,65 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 
-# PyTorch
-*.pth
-*.pt
+# Data files (too large for GitHub)
+STL/
+numpy_arrays/
+test_output/
+hybrid_data/
+voxel_data/
+*.stl
+*.ply
+*.npy
 
-# Data files (optional - comment out if you want to include them)
-# STL/
-# test_output/
-# numpy_arrays/
+# Model files
+*.pth
+*.pkl
+*.h5
+*.ckpt
+best_*.pth
+checkpoint/
+
+# Logs and results
+logs/
+*.log
+training_log.txt
+*.json
+
+# Visualization outputs
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
 
 # IDE
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
+# Temporary files
+temp_*
+tmp/
+cache/
 
-# Jupyter Notebook
-.ipynb_checkpoints
+# Large CSV files with data
+standardized_data/
+stl_analysis.csv
 
-# Environment
-.env
-.venv
-env/
-venv/
+# Keep only essential CSVs
+!classification_labels.csv
+!classification_labels_with_measurements.csv
