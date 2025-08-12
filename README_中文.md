@@ -190,6 +190,64 @@ pip install trimesh
 3. **集成方法**：結合多種方法
 4. **資料增強**：合成資料生成
 
+## 📦 備份指南（不會上傳到 GitHub 的檔案）
+
+### 必須備份的核心資料 🔴
+
+**資料夾：**
+- `STL/` - 原始 3D 血管模型檔案（~600 MB）
+- `numpy_arrays/` - 預處理陣列（~300 MB）
+- `hybrid_data/` - 混合模型資料（~400 MB）
+
+**模型檔案：**
+- `best_hybrid_model.pth` - 最佳混合模型
+- `best_traditional_ml_model.pkl` - 最佳傳統 ML 模型
+- `feature_scaler.pkl` - 特徵縮放器
+- `best_hybrid_150epochs.pth` - 150 輪訓練最佳模型
+
+### 可選備份 🟡
+
+**資料夾：**
+- `voxel_data/` - 體素資料（可從 STL 重新生成）
+- `test_output/` - 測試輸出結果
+- `logs/` - 訓練日誌
+- `standardized_data/` - 標準化資料集
+
+**模型檔案：**
+- `simple_voxel_only.pth`
+- `simple_voxel_measurements.pth`
+- `improved_model_best.pth`
+
+### 建議備份方案
+
+1. **Google Drive/雲端硬碟**
+   ```
+   G:\我的雲端硬碟\1_Projects\AI coding\3D vessel VOXEL\
+   └── subclavian-artery-pointnet-backup/
+       ├── STL/
+       ├── numpy_arrays/
+       ├── hybrid_data/
+       └── trained_models/
+           ├── best_hybrid_model.pth
+           ├── best_traditional_ml_model.pkl
+           └── feature_scaler.pkl
+   ```
+
+2. **壓縮備份指令**
+   ```bash
+   # 創建完整備份
+   7z a -mx9 subclavian_backup_$(date +%Y%m%d).7z STL/ numpy_arrays/ hybrid_data/ *.pth *.pkl
+   
+   # 最小必要備份
+   7z a -mx9 minimal_backup_$(date +%Y%m%d).7z STL/ classification_labels_with_measurements.csv best_*.pth *.pkl
+   ```
+
+3. **為什麼這些不上傳到 GitHub？**
+   - STL 檔案太大（總共 ~600MB）
+   - 訓練模型檔案（每個 10-50MB）
+   - GitHub 限制單檔 100MB，總儲存庫建議 < 1GB
+   - 資料可能包含敏感醫療資訊
+
 ## 資料隱私注意事項
 
 如果您的 STL 檔案包含敏感醫療資料：
