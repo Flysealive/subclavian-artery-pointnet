@@ -1,0 +1,11 @@
+,Balanced_Acc,Category,Parameters,Inference,Note
+Ultra Hybrid (Mesh+GNN+Voxel+Meas),0.975,Ultra Hybrid,3.5M,25ms,Highest accuracy
+MeshCNN/GNN Hybrid,0.968,Hybrid,2.8M,15ms,Best topology preservation
+YOUR MODEL (PointNet+Voxel+Meas),0.962,Hybrid,2.5M,20ms,ACTUAL RESULT - Excellent!
+MeshCNN + Measurements,0.935,With Measurements,2.15M,13ms,+15% from measurements
+GNN + Measurements,0.925,With Measurements,2.0M,11ms,+15% from measurements
+PointNet + Measurements,0.885,With Measurements,1.85M,9ms,+16.5% from measurements
+Traditional ML (RF/XGBoost),0.83,Traditional,50K,0.5ms,Fast but limited
+Pure MeshCNN,0.785,Pure,2.1M,12ms,Preserves edge structure
+Pure GNN,0.775,Pure,1.95M,10ms,Captures bifurcations
+Pure PointNet,0.72,Pure,1.8M,8ms,Loses vessel topology
