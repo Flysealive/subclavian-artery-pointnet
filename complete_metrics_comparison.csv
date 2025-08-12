@@ -2,21 +2,21 @@
 Accuracy","精確率
 Precision","召回率
 Recall","F1分數
-F1-Score",RMSE,"平衡準確率
+F1-Score","平衡準確率
 Balanced Acc",AUC,"特異度
 Specificity","敏感度
 Sensitivity"
-Hybrid (PointNet+Voxel+Meas),Hybrid,0.895,0.937,0.895,0.904,0.324,0.938,1.000,0.875,1.000
-Ultra Hybrid (All),Ultra Hybrid,0.895,0.937,0.895,0.904,0.324,0.938,0.958,0.875,1.000
-GNN + Measurements,With Measurements,0.895,0.937,0.895,0.904,0.324,0.938,0.896,0.875,1.000
-MeshCNN + Measurements,With Measurements,0.895,0.937,0.895,0.904,0.324,0.938,0.917,0.875,1.000
-MeshCNN/GNN Hybrid,Hybrid,0.895,0.937,0.895,0.904,0.324,0.938,0.958,0.875,1.000
-Improved Hybrid,Hybrid,0.789,0.845,0.789,0.809,0.459,0.740,0.875,0.812,0.667
-Traditional ML,Traditional,0.789,0.910,0.789,0.817,0.459,0.875,0.917,0.750,1.000
-PointNet + Measurements,With Measurements,0.789,0.910,0.789,0.817,0.459,0.875,0.979,0.750,1.000
-Hybrid 150 epochs,Hybrid,0.737,0.901,0.737,0.772,0.513,0.844,0.729,0.688,1.000
-Voxel + Measurements,With Measurements,0.737,0.901,0.737,0.772,0.513,0.844,0.833,0.688,1.000
-Pure MeshCNN,Pure,0.737,0.901,0.737,0.772,0.513,0.844,0.812,0.688,1.000
-Pure Voxel CNN,Pure,0.632,0.739,0.632,0.674,0.607,0.510,0.438,0.688,0.333
-Pure GNN,Pure,0.632,0.739,0.632,0.674,0.607,0.510,0.583,0.688,0.333
-Pure PointNet,Pure,0.632,0.739,0.632,0.674,0.607,0.510,0.667,0.688,0.333
+Hybrid (PointNet+Voxel+Meas),Hybrid,0.895,0.937,0.895,0.904,0.938,1.000,0.875,1.000
+Ultra Hybrid (All),Ultra Hybrid,0.895,0.937,0.895,0.904,0.938,0.958,0.875,1.000
+GNN + Measurements,With Measurements,0.895,0.937,0.895,0.904,0.938,0.896,0.875,1.000
+MeshCNN + Measurements,With Measurements,0.895,0.937,0.895,0.904,0.938,0.917,0.875,1.000
+MeshCNN/GNN Hybrid,Hybrid,0.895,0.937,0.895,0.904,0.938,0.958,0.875,1.000
+Improved Hybrid,Hybrid,0.789,0.845,0.789,0.809,0.740,0.875,0.812,0.667
+Traditional ML,Traditional,0.789,0.910,0.789,0.817,0.875,0.917,0.750,1.000
+PointNet + Measurements,With Measurements,0.789,0.910,0.789,0.817,0.875,0.979,0.750,1.000
+Hybrid 150 epochs,Hybrid,0.737,0.901,0.737,0.772,0.844,0.729,0.688,1.000
+Voxel + Measurements,With Measurements,0.737,0.901,0.737,0.772,0.844,0.833,0.688,1.000
+Pure MeshCNN,Pure,0.737,0.901,0.737,0.772,0.844,0.812,0.688,1.000
+Pure Voxel CNN,Pure,0.632,0.739,0.632,0.674,0.510,0.438,0.688,0.333
+Pure GNN,Pure,0.632,0.739,0.632,0.674,0.510,0.583,0.688,0.333
+Pure PointNet,Pure,0.632,0.739,0.632,0.674,0.510,0.667,0.688,0.333

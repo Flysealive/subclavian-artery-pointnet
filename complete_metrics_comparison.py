@@ -46,13 +46,10 @@ def calculate_all_metrics(y_true, y_pred, y_prob=None, model_name="Model"):
     # 4. F1分數 (F1-Score)
     metrics['F1_Score'] = f1_score(y_true, y_pred, average='weighted')
     
-    # 5. 均方根誤差 (RMSE)
-    metrics['RMSE'] = np.sqrt(mean_squared_error(y_true, y_pred))
-    
-    # 6. 平衡準確率 (Balanced Accuracy)
+    # 5. 平衡準確率 (Balanced Accuracy)
     metrics['Balanced_Accuracy'] = balanced_accuracy_score(y_true, y_pred)
     
-    # 7. AUC (if probabilities available)
+    # 6. AUC (if probabilities available)
     if y_prob is not None:
         try:
             metrics['AUC'] = roc_auc_score(y_true, y_prob)
@@ -61,11 +58,11 @@ def calculate_all_metrics(y_true, y_pred, y_prob=None, model_name="Model"):
     else:
         metrics['AUC'] = None
     
-    # 8. 混淆矩陣 (Confusion Matrix)
+    # 7. 混淆矩陣 (Confusion Matrix)
     cm = confusion_matrix(y_true, y_pred)
     metrics['Confusion_Matrix'] = cm
     
-    # 9. 特異度 (Specificity) - for binary classification
+    # 8. 特異度 (Specificity) - for binary classification
     if len(np.unique(y_true)) == 2:
         tn, fp, fn, tp = cm.ravel()
         metrics['Specificity'] = tn / (tn + fp) if (tn + fp) > 0 else 0
@@ -218,7 +215,6 @@ def create_comprehensive_comparison_table(all_metrics):
             '精確率\nPrecision': f"{metrics['Precision']:.3f}",
             '召回率\nRecall': f"{metrics['Recall']:.3f}",
             'F1分數\nF1-Score': f"{metrics['F1_Score']:.3f}",
-            'RMSE': f"{metrics['RMSE']:.3f}",
             '平衡準確率\nBalanced Acc': f"{metrics['Balanced_Accuracy']:.3f}",
             'AUC': f"{metrics['AUC']:.3f}" if metrics['AUC'] else 'N/A',
             '特異度\nSpecificity': f"{metrics.get('Specificity', 0):.3f}",
@@ -284,11 +280,11 @@ def plot_metrics_comparison(df):
         ('精確率\nPrecision', '精確率 (Precision)', axes[0, 1]),
         ('召回率\nRecall', '召回率 (Recall)', axes[0, 2]),
         ('F1分數\nF1-Score', 'F1分數 (F1-Score)', axes[1, 0]),
-        ('RMSE', '均方根誤差 (RMSE)', axes[1, 1]),
-        ('平衡準確率\nBalanced Acc', '平衡準確率 (Balanced Accuracy)', axes[1, 2]),
-        ('AUC', 'AUC', axes[2, 0]),
-        ('特異度\nSpecificity', '特異度 (Specificity)', axes[2, 1]),
-        ('敏感度\nSensitivity', '敏感度 (Sensitivity)', axes[2, 2])
+        ('平衡準確率\nBalanced Acc', '平衡準確率 (Balanced Accuracy)', axes[1, 1]),
+        ('AUC', 'AUC', axes[1, 2]),
+        ('特異度\nSpecificity', '特異度 (Specificity)', axes[2, 0]),
+        ('敏感度\nSensitivity', '敏感度 (Sensitivity)', axes[2, 1]),
+        (None, None, axes[2, 2])  # Empty subplot
     ]
     
     # Color mapping for categories
@@ -301,6 +297,11 @@ def plot_metrics_comparison(df):
     }
     
     for metric_col, title, ax in metrics_to_plot:
+        # Handle empty subplot
+        if metric_col is None:
+            ax.axis('off')
+            continue
+            
         # Get top 10 models for this metric
         if metric_col in df.columns:
             # Convert to float for sorting
@@ -308,10 +309,7 @@ def plot_metrics_comparison(df):
             df_metric[metric_col] = pd.to_numeric(df_metric[metric_col], errors='coerce')
             
             # Sort and get top 10
-            if metric_col == 'RMSE':  # Lower is better for RMSE
-                df_sorted = df_metric.nsmallest(10, metric_col)
-            else:
-                df_sorted = df_metric.nlargest(10, metric_col)
+            df_sorted = df_metric.nlargest(10, metric_col)
             
             # Create bar plot
             colors = [category_colors.get(cat, '#333') for cat in df_sorted['Category']]
@@ -330,10 +328,7 @@ def plot_metrics_comparison(df):
                            f'{val:.3f}', va='center', fontsize=8)
             
             # Set x-axis limits
-            if metric_col == 'RMSE':
-                ax.set_xlim([0, 1])
-            else:
-                ax.set_xlim([0, 1.05])
+            ax.set_xlim([0, 1.05])
             
             ax.grid(axis='x', alpha=0.3)
     
@@ -362,7 +357,7 @@ def create_detailed_report(all_metrics, df):
         ('精確率\nPrecision', '精確率 (Precision)'),
         ('召回率\nRecall', '召回率 (Recall)'),
         ('F1分數\nF1-Score', 'F1分數 (F1-Score)'),
-        ('RMSE', '均方根誤差 (RMSE, 越低越好)'),
+        ('平衡準確率\nBalanced Acc', '平衡準確率 (Balanced Accuracy)'),
         ('AUC', 'AUC')
     ]
     
@@ -373,10 +368,7 @@ def create_detailed_report(all_metrics, df):
         df_metric = df.copy()
         df_metric[metric_col] = pd.to_numeric(df_metric[metric_col], errors='coerce')
         
-        if metric_col == 'RMSE':
-            top5 = df_metric.nsmallest(5, metric_col)
-        else:
-            top5 = df_metric.nlargest(5, metric_col)
+        top5 = df_metric.nlargest(5, metric_col)
         
         for idx, row in top5.iterrows():
             print(f"  {row['Model']:30s}: {row[metric_col]}")
@@ -387,7 +379,7 @@ def create_detailed_report(all_metrics, df):
     print("="*60)
     
     numeric_cols = ['準確率\nAccuracy', '精確率\nPrecision', '召回率\nRecall', 
-                   'F1分數\nF1-Score', 'RMSE', '平衡準確率\nBalanced Acc']
+                   'F1分數\nF1-Score', '平衡準確率\nBalanced Acc']
     
     for col in numeric_cols:
         df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -402,11 +394,10 @@ def create_detailed_report(all_metrics, df):
     
     # Calculate composite score
     df['Composite'] = (
-        df['準確率\nAccuracy'] * 0.25 +
+        df['準確率\nAccuracy'] * 0.3 +
         df['精確率\nPrecision'] * 0.2 +
         df['召回率\nRecall'] * 0.2 +
-        df['F1分數\nF1-Score'] * 0.25 +
-        (1 - df['RMSE']) * 0.1  # Invert RMSE
+        df['F1分數\nF1-Score'] * 0.3
     )
     
     best_model = df.nlargest(1, 'Composite').iloc[0]
@@ -415,7 +406,7 @@ def create_detailed_report(all_metrics, df):
     print(f"  精確率: {best_model['精確率\nPrecision']:.3f}")
     print(f"  召回率: {best_model['召回率\nRecall']:.3f}")
     print(f"  F1分數: {best_model['F1分數\nF1-Score']:.3f}")
-    print(f"  RMSE: {best_model['RMSE']:.3f}")
+    print(f"  平衡準確率: {best_model['平衡準確率\nBalanced Acc']:.3f}")
     print(f"  AUC: {best_model['AUC']}")
 
 def create_confusion_matrix_comparison(all_metrics):

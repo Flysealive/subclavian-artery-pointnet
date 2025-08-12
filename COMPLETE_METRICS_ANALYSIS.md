@@ -11,7 +11,6 @@ Complete metrics table with:
 - Precision (精確率) 
 - Recall (召回率)
 - F1-Score (F1分數)
-- RMSE (均方根誤差)
 - Balanced Accuracy (平衡準確率)
 - AUC (Area Under Curve)
 - Specificity (特異度)
@@ -21,8 +20,8 @@ Complete metrics table with:
 ROC curves comparing all 14 models with AUC values
 
 ### 3. **complete_metrics_comparison.png**
-9-panel visualization showing:
-- Top 10 models for each metric
+8-panel visualization showing:
+- Top 10 models for each metric (8 metrics)
 - Bar charts for all evaluation metrics
 - Category-based comparisons
 
@@ -66,7 +65,7 @@ Confusion matrices for top 6 models showing classification performance
    - **Highest Accuracy**: Hybrid models (89.5%)
    - **Highest Precision**: Hybrid models (93.7%)
    - **Highest Recall**: Multiple at 89.5%
-   - **Lowest RMSE**: Hybrid models (0.324)
+   - **Best Balanced Accuracy**: Hybrid models (93.8%)
    - **Best AUC**: Your model (1.000)
 
 ## Statistical Significance
